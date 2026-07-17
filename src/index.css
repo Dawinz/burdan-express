@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+safari-shell,
+safari-shells-container,
+safari-page-blocking-progress,
+.safari-shells-container {
+  z-index: 100000 !important;
+}

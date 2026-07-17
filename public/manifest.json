@@ -1,0 +1,15 @@
+{
+  "short_name": "Burdan Express",
+  "name": "Burdan Express - DAR | LINDI | MASASI",
+  "icons": [
+    {
+      "src": "images/burdan-bus-4.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#DC2626",
+  "background_color": "#ffffff"
+}
