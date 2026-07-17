@@ -9,17 +9,17 @@ const Gallery = () => {
     { id: 1, src: '/images/burdan-bus-1.png', alt: 'Burdan Express Bus - Front View', title: t('modernFleet') },
     { id: 2, src: '/images/burdan-bus-2.png', alt: 'Burdan Express Bus - Day', title: t('comfortableInterior') },
     { id: 3, src: '/images/burdan-bus-3.png', alt: 'Burdan Express - Rear Night', title: t('professionalService') },
-    { id: 4, src: '/images/burdan-bus-4.png', alt: 'Burdan Express Office Sign', title: 'Office' },
+    { id: 4, src: '/images/burdan-bus-4.png', alt: 'Burdan Express Office Sign', title: t('galleryOffice') },
     { id: 5, src: '/images/burdan-bus-5.png', alt: 'Burdan Express - LED Rear', title: t('premiumExperience') },
     { id: 6, src: '/images/burdan-bus-7.png', alt: 'Burdan Express - Rear Day', title: t('atTheTerminal') },
     { id: 7, src: '/images/burdan-bus-8.png', alt: 'Burdan Express - On Road', title: t('onTheRoad') },
     { id: 8, src: '/images/burdan-bus-9.png', alt: 'Burdan Express - Another Bus', title: t('fleetOne') },
     { id: 9, src: '/images/burdan-bus-10.png', alt: 'Burdan Express - Night', title: t('fleetTwo') },
     { id: 10, src: '/images/burdan-bus-11.png', alt: 'Burdan Express - Full Night', title: t('fleetThree') },
-    { id: 11, src: '/images/burdan-bus-12.png', alt: 'Burdan Express - Neon Night', title: 'Night Express' },
-    { id: 12, src: '/images/burdan-bus-13.png', alt: 'Burdan Express Fleet - Road', title: 'Fleet' },
-    { id: 13, src: '/images/burdan-bus-14.png', alt: 'Burdan Express - Blue Accent', title: 'AN EXPI' },
-    { id: 14, src: '/images/burdan-bus-15.png', alt: 'Burdan Express - Side Profile', title: 'Side Profile' }
+    { id: 11, src: '/images/burdan-bus-12.png', alt: 'Burdan Express - Neon Night', title: t('galleryNightExpress') },
+    { id: 12, src: '/images/burdan-bus-13.png', alt: 'Burdan Express Fleet - Road', title: t('galleryFleetGroup') },
+    { id: 13, src: '/images/burdan-bus-14.png', alt: 'Burdan Express - Blue Accent', title: t('fleetFour') },
+    { id: 14, src: '/images/burdan-bus-15.png', alt: 'Burdan Express - Side Profile', title: t('gallerySideProfile') }
   ];
 
   return (

@@ -29,7 +29,23 @@ module.exports = {
         '2xl': '1rem',
         '3xl': '1.5rem',
         '4xl': '2rem',
-      }
+      },
+      keyframes: {
+        fadeUp: {
+          '0%': { opacity: '0', transform: 'translateY(24px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+      },
+      animation: {
+        'fade-up': 'fadeUp 0.7s ease-out forwards',
+        'fade-up-delay': 'fadeUp 0.7s ease-out 0.2s forwards',
+        'fade-up-delay-2': 'fadeUp 0.7s ease-out 0.4s forwards',
+        'fade-in': 'fadeIn 1s ease-out forwards',
+      },
     },
   },
   plugins: [],

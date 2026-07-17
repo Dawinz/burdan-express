@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const LanguageContext = createContext();
+
+const LANGUAGE_STORAGE_KEY = 'burdan-language';
 
 export const useLanguage = () => {
   const context = useContext(LanguageContext);
@@ -11,7 +13,18 @@ export const useLanguage = () => {
 };
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState('sw');
+  const [language, setLanguage] = useState(() => {
+    try {
+      const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+      if (stored === 'en' || stored === 'sw') return stored;
+    } catch {}
+    return 'sw';
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem(LANGUAGE_STORAGE_KEY, language); } catch {}
+    document.documentElement.lang = language;
+  }, [language]);
 
   const toggleLanguage = () => {
     setLanguage(prev => prev === 'en' ? 'sw' : 'en');
@@ -164,7 +177,77 @@ export const LanguageProvider = ({ children }) => {
         selectDateError: 'Please select travel date',
         invalidDateError: 'Please enter a valid date (DD/MM/YYYY)',
         pastDateError: 'Travel date cannot be in the past',
-        selectPassengersError: 'Please select number of passengers'
+        selectPassengersError: 'Please select number of passengers',
+
+        support: 'Support',
+        privacyPolicyNav: 'Privacy Policy',
+        heroTagline: 'Travel Southern Tanzania in Comfort',
+        heroSubtitle: 'Premium buses connecting Dar es Salaam, Lindi and Masasi. Book your seat in seconds.',
+        exploreRoutes: 'Explore Routes',
+
+        bookingBadge: 'BOOKING',
+        selectYourSeats: 'SELECT YOUR SEATS',
+        driver: 'DRIVER',
+        available: 'Available',
+        selected: 'Selected',
+        taken: 'Taken',
+        tripDetails: 'Trip Details',
+        routeLabel: 'Route',
+        dateLabel: 'Date',
+        today: 'Today',
+        departureLabel: 'Departure',
+        arrivalLabel: 'Arrival',
+        selectedSeatsLabel: 'Selected Seats',
+        noneSelected: 'None selected',
+        seatLabel: 'Seat',
+        stationsLabel: 'Stations',
+        pickupLabel: 'Pickup',
+        dropOffLabel: 'Drop-off',
+        totalLabel: 'Total',
+        processing: 'PROCESSING...',
+        proceedToPayment: 'PROCEED TO PAYMENT',
+        selectSeatAlert: 'Please select at least one seat',
+        selectPickupAlert: 'Please select a pickup station',
+        selectDropoffAlert: 'Please select a drop-off station',
+        selectPickupOption: 'Select pickup',
+        selectDropoffOption: 'Select drop-off',
+        paymentSystemLoading: 'SafariYetu payment system is loading.',
+        paymentSystemError: 'Unable to load payment system.',
+
+        helpBadge: 'HELP',
+        supportCenter: 'SUPPORT CENTER',
+        supportIntro: "Need help with booking, trips, or the app? We're here for you.",
+        phoneWhatsAppLabel: 'Phone / WhatsApp',
+        emailLabel: 'Email',
+        hoursLabel: 'Hours',
+        dailyHours: 'Daily, 5:00 AM - 10:00 PM',
+        quickHelpTopics: 'Quick Help Topics',
+        helpTopic1: 'Booking confirmation and ticket reference support.',
+        helpTopic2: 'Trip schedule updates and boarding-time assistance.',
+        helpTopic3: 'Refund and cancellation guidance.',
+        helpTopic4: 'Mobile app install, login, and booking troubleshooting.',
+
+        legalBadge: 'LEGAL',
+        privacyPolicyTitle: 'PRIVACY POLICY',
+        lastUpdated: 'Last updated: July 15, 2026',
+        privacySection1Title: '1. Information We Collect',
+        privacySection1Content: 'We may collect booking and contact details including your name, phone number, email address, route, and travel information.',
+        privacySection2Title: '2. How We Use Information',
+        privacySection2Item1: 'To process and manage bookings.',
+        privacySection2Item2: 'To provide travel and support updates.',
+        privacySection2Item3: 'To improve customer experience and service quality.',
+        privacySection2Item4: 'To comply with legal obligations.',
+        privacySection3Title: '3. Data Sharing',
+        privacySection3Content: 'We share data only when required for service delivery, legal compliance, or with your consent.',
+        privacySection4Title: '4. Contact',
+        privacyContactPrefix: 'For privacy requests, email',
+
+        galleryOffice: 'Our Office',
+        galleryNightExpress: 'Night Express',
+        galleryFleetGroup: 'Our Fleet',
+        gallerySideProfile: 'Side Profile',
+
+        whatsappDefaultMessage: 'Hello! I would like to inquire about Burdan Express bus services.'
       },
       sw: {
         home: 'Nyumbani',
@@ -311,7 +394,77 @@ export const LanguageProvider = ({ children }) => {
         selectDateError: 'Tafadhali chagua tarehe ya safari',
         invalidDateError: 'Tafadhali weka tarehe sahihi (DD/MM/YYYY)',
         pastDateError: 'Tarehe ya safari haiwezi kuwa ya zamani',
-        selectPassengersError: 'Tafadhali chagua idadi ya abiria'
+        selectPassengersError: 'Tafadhali chagua idadi ya abiria',
+
+        support: 'Msaada',
+        privacyPolicyNav: 'Sera ya Faragha',
+        heroTagline: 'Safiri Kusini mwa Tanzania kwa Ustarehe',
+        heroSubtitle: 'Mabasi ya kilasi yanayounganisha Dar es Salaam, Lindi na Masasi. Book kiti chako kwa sekunde chache.',
+        exploreRoutes: 'Angalia Njia',
+
+        bookingBadge: 'UHIFADHI',
+        selectYourSeats: 'CHAGUA VITI VYAKO',
+        driver: 'DEREVA',
+        available: 'Vinapatikana',
+        selected: 'Vimechaguliwa',
+        taken: 'Vimechukuliwa',
+        tripDetails: 'Maelezo ya Safari',
+        routeLabel: 'Njia',
+        dateLabel: 'Tarehe',
+        today: 'Leo',
+        departureLabel: 'Kuondoka',
+        arrivalLabel: 'Kuwasili',
+        selectedSeatsLabel: 'Viti Vilivyochaguliwa',
+        noneSelected: 'Hakuna kilichochaguliwa',
+        seatLabel: 'Kiti',
+        stationsLabel: 'Vituo',
+        pickupLabel: 'Mahali pa Kupanda',
+        dropOffLabel: 'Mahali pa Kushuka',
+        totalLabel: 'Jumla',
+        processing: 'INAENDELEA...',
+        proceedToPayment: 'ENDELEA NA MALIPO',
+        selectSeatAlert: 'Tafadhali chagua kiti angalau kimoja',
+        selectPickupAlert: 'Tafadhali chagua kituo cha kupanda',
+        selectDropoffAlert: 'Tafadhali chagua kituo cha kushuka',
+        selectPickupOption: 'Chagua mahali pa kupanda',
+        selectDropoffOption: 'Chagua mahali pa kushuka',
+        paymentSystemLoading: 'Mfumo wa malipo wa SafariYetu unapakia.',
+        paymentSystemError: 'Imeshindwa kupakia mfumo wa malipo.',
+
+        helpBadge: 'MSAADA',
+        supportCenter: 'KITUO CHA MSAADA',
+        supportIntro: 'Unahitaji msaada wa uhifadhi, safari au app? Tupo hapa kukusaidia.',
+        phoneWhatsAppLabel: 'Simu / WhatsApp',
+        emailLabel: 'Barua Pepe',
+        hoursLabel: 'Masaa',
+        dailyHours: 'Kila siku, 5:00 AM - 10:00 PM',
+        quickHelpTopics: 'Mada za Msaada wa Haraka',
+        helpTopic1: 'Msaada wa uthibitisho wa uhifadhi na kumbukumbu ya tiketi.',
+        helpTopic2: 'Masasisho ya ratiba za safari na msaada wa muda wa kupanda.',
+        helpTopic3: 'Mwongozo wa marejesho na kughairi.',
+        helpTopic4: 'Msaada wa kusakinisha app, kuingia, na matatizo ya uhifadhi.',
+
+        legalBadge: 'KISHERIA',
+        privacyPolicyTitle: 'SERA YA FARAGHA',
+        lastUpdated: 'Ilisasishwa: Julai 15, 2026',
+        privacySection1Title: '1. Taarifa Tunazokusanya',
+        privacySection1Content: 'Tunaweza kukusanya maelezo ya uhifadhi na mawasiliano ikiwa ni pamoja na jina lako, namba ya simu, barua pepe, njia, na taarifa za safari.',
+        privacySection2Title: '2. Jinsi Tunavyotumia Taarifa',
+        privacySection2Item1: 'Kushughulikia na kusimamia uhifadhi.',
+        privacySection2Item2: 'Kutoa masasisho ya safari na msaada.',
+        privacySection2Item3: 'Kuboresha uzoefu wa wateja na ubora wa huduma.',
+        privacySection2Item4: 'Kutii wajibu wa kisheria.',
+        privacySection3Title: '3. Kushiriki Data',
+        privacySection3Content: 'Tunashiriki data pale tu inapohitajika kwa utoaji wa huduma, utii wa kisheria, au kwa ridhaa yako.',
+        privacySection4Title: '4. Mawasiliano',
+        privacyContactPrefix: 'Kwa maombi ya faragha, tuma barua pepe',
+
+        galleryOffice: 'Ofisi Yetu',
+        galleryNightExpress: 'Safari za Usiku',
+        galleryFleetGroup: 'Magari Yetu',
+        gallerySideProfile: 'Mwonekano wa Kando',
+
+        whatsappDefaultMessage: 'Habari! Ningependa kuuliza kuhusu huduma za mabasi za Burdan Express.'
       }
     };
 

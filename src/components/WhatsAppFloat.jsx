@@ -1,11 +1,12 @@
 import React from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const WhatsAppFloat = () => {
+  const { t } = useLanguage();
   const whatsappNumber = '255717009600';
-  const defaultMessage = 'Hello! I would like to inquire about Burdan Express bus services.';
 
   const handleWhatsAppClick = () => {
-    const encodedMessage = encodeURIComponent(defaultMessage);
+    const encodedMessage = encodeURIComponent(t('whatsappDefaultMessage'));
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
   };

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SafariYetuScrollManager from '../utils/safariYetuScrollManager';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const Book = () => {
+  const { t } = useLanguage();
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [pickupStation, setPickupStation] = useState('');
@@ -25,12 +27,12 @@ const Book = () => {
   const handleSeatClick = (n) => { const s = seats.find(s => s.number === n); if (!s.isAvailable) return; setSelectedSeats(prev => prev.includes(n) ? prev.filter(x => x !== n) : [...prev, n]); };
 
   const handleProceedToPayment = async () => {
-    if (!selectedSeats.length) { alert('Please select at least one seat'); return; }
-    if (!pickupStation) { alert('Please select a pickup station'); return; }
-    if (!dropOffStation) { alert('Please select a drop-off station'); return; }
+    if (!selectedSeats.length) { alert(t('selectSeatAlert')); return; }
+    if (!pickupStation) { alert(t('selectPickupAlert')); return; }
+    if (!dropOffStation) { alert(t('selectDropoffAlert')); return; }
     if (scrollManagerRef.current) scrollManagerRef.current.cleanup();
     try {
-      const bookingData = { operatorId: '2496230038', origin: pickupStation, destination: dropOffStation, departureDate: new Date().toISOString().split('T')[0], passengersCount: selectedSeats.length, selectedSeats, onClose: () => { setIsLoading(false); setIsBookingDialogOpen(false); } };
+      const bookingData = { operatorId: '2203260042', origin: pickupStation, destination: dropOffStation, departureDate: new Date().toISOString().split('T')[0], passengersCount: selectedSeats.length, selectedSeats, onClose: () => { setIsLoading(false); setIsBookingDialogOpen(false); } };
       scrollManagerRef.current = SafariYetuScrollManager.createInstance();
       setIsLoading(true); setIsBookingDialogOpen(true);
       if (typeof window.safariplus === 'undefined') {
@@ -38,10 +40,10 @@ const Book = () => {
           scrollManagerRef.current.disableScroll();
           setTimeout(() => { alert(`Mock Payment:\nSeats: ${selectedSeats.join(', ')}\nPickup: ${pickupStation}\nDrop-off: ${dropOffStation}`); if (scrollManagerRef.current) { scrollManagerRef.current.enableScroll(); scrollManagerRef.current.cleanup(); } setIsLoading(false); setIsBookingDialogOpen(false); }, 2000);
           return;
-        } else throw new Error('SafariYetu payment system is loading.');
+        } else throw new Error(t('paymentSystemLoading'));
       }
       await scrollManagerRef.current.openBookingDialog(bookingData);
-    } catch (error) { alert(error.message || 'Unable to load payment system.'); if (scrollManagerRef.current) { scrollManagerRef.current.cleanup(); scrollManagerRef.current = null; } setIsLoading(false); setIsBookingDialogOpen(false); }
+    } catch (error) { alert(error.message || t('paymentSystemError')); if (scrollManagerRef.current) { scrollManagerRef.current.cleanup(); scrollManagerRef.current = null; } setIsLoading(false); setIsBookingDialogOpen(false); }
   };
 
   const getSeatClass = (seat) => {
@@ -50,20 +52,25 @@ const Book = () => {
     return 'bg-white border-2 border-burdan-gray hover:border-burdan-red/50 cursor-pointer';
   };
 
+  const stationConfig = [
+    { key: 'pickup', label: t('pickupLabel'), placeholder: t('selectPickupOption'), val: pickupStation, set: setPickupStation, opts: darStations },
+    { key: 'dropoff', label: t('dropOffLabel'), placeholder: t('selectDropoffOption'), val: dropOffStation, set: setDropOffStation, opts: lindiStations }
+  ];
+
   return (
     <div className="min-h-screen bg-burdan-cream pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-10">
-          <span className="inline-block bg-burdan-red/10 text-burdan-red font-body font-semibold text-xs uppercase tracking-widest px-4 py-2 rounded-full mb-4">BOOKING</span>
-          <h1 className="text-4xl md:text-5xl font-heading font-bold text-burdan-black tracking-tight">SELECT YOUR SEATS</h1>
+          <span className="inline-block bg-burdan-red/10 text-burdan-red font-body font-semibold text-xs uppercase tracking-widest px-4 py-2 rounded-full mb-4">{t('bookingBadge')}</span>
+          <h1 className="text-4xl md:text-5xl font-heading font-bold text-burdan-black tracking-tight">{t('selectYourSeats')}</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <div className="bg-white rounded-3xl p-8 border border-burdan-gray">
-              <div className="flex justify-center mb-6"><div className="bg-burdan-black text-white px-6 py-2 rounded-xl font-heading font-bold text-sm">DRIVER</div></div>
+              <div className="flex justify-center mb-6"><div className="bg-burdan-black text-white px-6 py-2 rounded-xl font-heading font-bold text-sm">{t('driver')}</div></div>
               <div className="flex justify-center gap-6 mb-8">
-                {[{ color: 'bg-white border-2 border-burdan-gray', label: 'Available' }, { color: 'bg-burdan-red', label: 'Selected' }, { color: 'bg-burdan-gray', label: 'Taken' }].map(({ color, label }) => (
+                {[{ color: 'bg-white border-2 border-burdan-gray', label: t('available') }, { color: 'bg-burdan-red', label: t('selected') }, { color: 'bg-burdan-gray', label: t('taken') }].map(({ color, label }) => (
                   <div key={label} className="flex items-center gap-2 text-xs font-body text-burdan-darkgray/70"><div className={`w-4 h-4 rounded-lg ${color}`} />{label}</div>
                 ))}
               </div>
@@ -77,27 +84,27 @@ const Book = () => {
 
           <div className="space-y-5">
             <div className="bg-white rounded-2xl p-6 border border-burdan-gray">
-              <h3 className="text-sm font-heading font-bold text-burdan-black mb-4 uppercase tracking-wider">Trip Details</h3>
+              <h3 className="text-sm font-heading font-bold text-burdan-black mb-4 uppercase tracking-wider">{t('tripDetails')}</h3>
               <div className="space-y-3 text-sm font-body">
-                {[['Route', 'Dar → Lindi'], ['Date', 'Today'], ['Departure', '6:00 AM'], ['Arrival', '12:00 PM']].map(([k, v]) => (
+                {[[t('routeLabel'), 'Dar → Lindi'], [t('dateLabel'), t('today')], [t('departureLabel'), '6:00 AM'], [t('arrivalLabel'), '12:00 PM']].map(([k, v]) => (
                   <div key={k} className="flex justify-between"><span className="text-burdan-darkgray/50">{k}</span><span className="font-semibold text-burdan-black">{v}</span></div>
                 ))}
               </div>
             </div>
             <div className="bg-white rounded-2xl p-6 border border-burdan-gray">
-              <h3 className="text-sm font-heading font-bold text-burdan-black mb-4 uppercase tracking-wider">Selected Seats</h3>
-              {!selectedSeats.length ? <p className="text-burdan-darkgray/40 font-body text-sm">None selected</p> : selectedSeats.map(n => (
-                <div key={n} className="flex justify-between items-center py-1"><span className="font-body text-sm">Seat {n}</span><span className="font-heading font-bold text-burdan-red text-sm">TSh 35,000</span></div>
+              <h3 className="text-sm font-heading font-bold text-burdan-black mb-4 uppercase tracking-wider">{t('selectedSeatsLabel')}</h3>
+              {!selectedSeats.length ? <p className="text-burdan-darkgray/40 font-body text-sm">{t('noneSelected')}</p> : selectedSeats.map(n => (
+                <div key={n} className="flex justify-between items-center py-1"><span className="font-body text-sm">{t('seatLabel')} {n}</span><span className="font-heading font-bold text-burdan-red text-sm">TSh 35,000</span></div>
               ))}
             </div>
             <div className="bg-white rounded-2xl p-6 border border-burdan-gray">
-              <h3 className="text-sm font-heading font-bold text-burdan-black mb-4 uppercase tracking-wider">Stations</h3>
+              <h3 className="text-sm font-heading font-bold text-burdan-black mb-4 uppercase tracking-wider">{t('stationsLabel')}</h3>
               <div className="space-y-3">
-                {[{ label: 'Pickup', val: pickupStation, set: setPickupStation, opts: darStations }, { label: 'Drop-off', val: dropOffStation, set: setDropOffStation, opts: lindiStations }].map(({ label, val, set, opts }) => (
-                  <div key={label}>
+                {stationConfig.map(({ key, label, placeholder, val, set, opts }) => (
+                  <div key={key}>
                     <label className="block text-xs font-body font-semibold text-burdan-darkgray/70 mb-1.5 uppercase tracking-wider">{label}</label>
                     <select value={val} onChange={(e) => set(e.target.value)} className="w-full p-3 border-2 border-burdan-gray rounded-xl focus:border-burdan-orange focus:outline-none font-body text-sm transition-all">
-                      <option value="">Select {label.toLowerCase()}</option>
+                      <option value="">{placeholder}</option>
                       {opts.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                   </div>
@@ -105,10 +112,10 @@ const Book = () => {
               </div>
             </div>
             <div className="bg-white rounded-2xl p-6 border border-burdan-gray">
-              <div className="flex justify-between font-heading font-bold text-lg"><span>Total</span><span className="text-burdan-red">TSh {(selectedSeats.length * 35000 + (selectedSeats.length ? 2000 : 0)).toLocaleString()}</span></div>
+              <div className="flex justify-between font-heading font-bold text-lg"><span>{t('totalLabel')}</span><span className="text-burdan-red">TSh {(selectedSeats.length * 35000 + (selectedSeats.length ? 2000 : 0)).toLocaleString()}</span></div>
             </div>
             <button onClick={handleProceedToPayment} disabled={!selectedSeats.length || !pickupStation || !dropOffStation || isLoading} className={`w-full font-heading font-bold py-4 rounded-xl transition-all duration-300 text-sm ${!selectedSeats.length || !pickupStation || !dropOffStation || isLoading ? 'bg-burdan-gray text-burdan-darkgray/40 cursor-not-allowed' : 'bg-burdan-red hover:bg-burdan-darkred text-white shadow-lg hover:shadow-burdan-red/30'}`}>
-              {isLoading ? 'PROCESSING...' : 'PROCEED TO PAYMENT'}
+              {isLoading ? t('processing') : t('proceedToPayment')}
             </button>
           </div>
         </div>

@@ -47,7 +47,7 @@ const Routes = () => {
         </div>
 
         <div className="mt-16 bg-white rounded-3xl p-8 md:p-10 border border-burdan-gray">
-          <h2 className="text-2xl font-heading font-bold text-burdan-black mb-8 text-center tracking-tight">ROUTE INFORMATION</h2>
+          <h2 className="text-2xl font-heading font-bold text-burdan-black mb-8 text-center tracking-tight">{t('routeInformation')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div>
               <h3 className="text-sm font-heading font-bold text-burdan-red mb-4 uppercase tracking-widest">{t('departureTimes')}</h3>

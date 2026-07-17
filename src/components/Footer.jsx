@@ -42,8 +42,8 @@ const Footer = () => {
                 { to: '/routes', label: t('routes') },
                 { to: '/gallery', label: t('gallery') },
                 { to: '/contact', label: t('contact') },
-                { to: '/support', label: 'Support' },
-                { to: '/privacy-policy', label: 'Privacy Policy' },
+                { to: '/support', label: t('support') },
+                { to: '/privacy-policy', label: t('privacyPolicyNav') },
               ].map(({ to, label }) => (
                 <li key={to}><Link to={to} className="text-white/50 hover:text-white transition-colors duration-200">{label}</Link></li>
               ))}
