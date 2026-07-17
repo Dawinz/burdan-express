@@ -21,14 +21,19 @@ function App() {
 
     let dialogWasSeen = false;
 
-    const checkInterval = setInterval(() => {
-      // Only safari-shell indicates an open booking dialog.
-      // .safari-shells-container exists even when idle.
-      const shell = document.querySelector('safari-shell');
-      const blocker = document.querySelector('safari-page-blocking-progress');
-      const dialogPresent = Boolean(shell || blocker);
+    const isSafariDialogOpen = () => {
+      try {
+        const Shell = customElements.get('safari-shell');
+        if (Shell && Array.isArray(Shell.activeShells) && Shell.activeShells.length > 0) {
+          return true;
+        }
+      } catch {}
+      // Fallback: light-DOM blocker (rarely used)
+      return Boolean(document.querySelector('safari-page-blocking-progress'));
+    };
 
-      if (dialogPresent) {
+    const checkInterval = setInterval(() => {
+      if (isSafariDialogOpen()) {
         dialogWasSeen = true;
         return;
       }
@@ -38,7 +43,7 @@ function App() {
         document.body.style.overflow = '';
         window.location.reload();
       }
-    }, 800);
+    }, 500);
 
     return () => clearInterval(checkInterval);
   }, [isBookingDialogOpen]);
