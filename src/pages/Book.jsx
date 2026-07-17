@@ -32,7 +32,7 @@ const Book = () => {
     if (!dropOffStation) { alert(t('selectDropoffAlert')); return; }
     if (scrollManagerRef.current) scrollManagerRef.current.cleanup();
     try {
-      const bookingData = { operatorId: '2203260042', origin: pickupStation, destination: dropOffStation, departureDate: new Date().toISOString().split('T')[0], passengersCount: selectedSeats.length, selectedSeats, onClose: () => { setIsLoading(false); setIsBookingDialogOpen(false); window.location.reload(); } };
+      const bookingData = { operatorId: '2203260042', origin: pickupStation, destination: dropOffStation, departureDate: new Date().toISOString().split('T')[0], passengersCount: selectedSeats.length, selectedSeats, brand: 'Burdan Express', onClose: () => { setIsLoading(false); setIsBookingDialogOpen(false); window.location.reload(); } };
       scrollManagerRef.current = SafariYetuScrollManager.createInstance();
       setIsLoading(true); setIsBookingDialogOpen(true);
       if (typeof window.safariplus === 'undefined') {

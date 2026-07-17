@@ -23,14 +23,14 @@ const SearchableSelect = ({ options, value, onChange, placeholder, isOpen, onTog
 
   return (
     <div ref={wrapperRef} className="relative">
-      <button type="button" onClick={onToggle} className="w-full p-2.5 sm:p-3 border-2 border-burdan-gray rounded-xl focus:border-burdan-orange focus:outline-none font-body text-burdan-darkgray bg-white text-sm text-left flex items-center justify-between transition-all duration-200 hover:border-burdan-orange/50">
+      <button type="button" onClick={onToggle} className="w-full p-2.5 sm:p-3 border border-burdan-gray focus:border-burdan-red focus:outline-none font-body text-burdan-darkgray bg-white text-sm text-left flex items-center justify-between transition-all duration-200 hover:border-burdan-red/50">
         <span className="truncate">{selectedOption ? selectedOption.label : <span className="text-burdan-darkgray/40">{placeholder}</span>}</span>
         <svg className={`w-4 h-4 text-burdan-darkgray/50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 9-7 7-7-7" />
         </svg>
       </button>
       {isOpen && (
-        <div className="absolute top-full mt-1 left-0 w-full z-[200] border border-burdan-gray rounded-xl bg-white shadow-xl overflow-hidden">
+        <div className="absolute top-full mt-1 left-0 w-full z-[200] border border-burdan-gray bg-white shadow-xl overflow-hidden">
           <div className="flex items-center px-3 py-2.5 border-b border-burdan-gray/40">
             <svg className="w-4 h-4 mr-2 text-burdan-darkgray/40 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m21 21-4.35-4.35m1.85-5.15a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" />

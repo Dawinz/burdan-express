@@ -3,7 +3,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppFloat from './components/WhatsAppFloat';
 import AppDownloadModal from './components/AppDownloadModal';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Home from './pages/Home';
 import RoutesPage from './pages/Routes';
 import Gallery from './pages/Gallery';
@@ -13,61 +13,73 @@ import Support from './pages/Support';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import { LanguageProvider } from './contexts/LanguageContext';
 
+/**
+ * SafariPlus lifecycle (official docs):
+ * - safariplus:dialog-opened
+ * - safariplus:booking-completed
+ * - safariplus:booking-cancelled
+ * - safariplus:dialog-closed
+ * See: https://demo.safariyetu.com/safariplus/v1/examples/embed.html
+ */
 function App() {
   const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
 
+  const reloadAfterBooking = useCallback(() => {
+    document.body.style.overflow = '';
+    window.location.reload();
+  }, []);
+
+  useEffect(() => {
+    const onOpened = () => {
+      setIsBookingDialogOpen(true);
+      document.body.style.overflow = 'hidden';
+    };
+
+    const onClosed = () => {
+      setIsBookingDialogOpen(false);
+      reloadAfterBooking();
+    };
+
+    document.addEventListener('safariplus:dialog-opened', onOpened);
+    document.addEventListener('safariplus:dialog-closed', onClosed);
+    document.addEventListener('safariplus:booking-cancelled', onClosed);
+    document.addEventListener('safariplus:booking-completed', onClosed);
+
+    return () => {
+      document.removeEventListener('safariplus:dialog-opened', onOpened);
+      document.removeEventListener('safariplus:dialog-closed', onClosed);
+      document.removeEventListener('safariplus:booking-cancelled', onClosed);
+      document.removeEventListener('safariplus:booking-completed', onClosed);
+    };
+  }, [reloadAfterBooking]);
+
+  // Fallback: SafariPlus mounts shells in a closed shadow root.
+  // If lifecycle events miss, detect via activeShells then reload on close.
   useEffect(() => {
     if (!isBookingDialogOpen) return;
 
-    let dialogWasSeen = false;
-    let reloading = false;
-
-    const reloadPage = () => {
-      if (reloading) return;
-      reloading = true;
-      document.body.style.overflow = '';
-      window.location.reload();
-    };
-
-    const isSafariDialogOpen = () => {
+    let seen = false;
+    const timer = setInterval(() => {
       try {
         const Shell = customElements.get('safari-shell');
-        if (Shell && Array.isArray(Shell.activeShells) && Shell.activeShells.length > 0) {
-          return true;
+        const open = Shell && Array.isArray(Shell.activeShells) && Shell.activeShells.length > 0;
+        if (open) {
+          seen = true;
+          return;
+        }
+        if (seen) {
+          clearInterval(timer);
+          reloadAfterBooking();
         }
       } catch {}
-      return Boolean(document.querySelector('safari-page-blocking-progress'));
-    };
+    }, 600);
 
-    const onDialogClosed = () => reloadPage();
-    document.addEventListener('safariplus:dialog-closed', onDialogClosed);
-    document.addEventListener('safariplus:booking-cancelled', onDialogClosed);
-    window.addEventListener('safariplus:dialog-closed', onDialogClosed);
-    window.addEventListener('safariplus:booking-cancelled', onDialogClosed);
-
-    const checkInterval = setInterval(() => {
-      if (isSafariDialogOpen()) {
-        dialogWasSeen = true;
-        return;
-      }
-      if (dialogWasSeen) {
-        clearInterval(checkInterval);
-        reloadPage();
-      }
-    }, 500);
-
-    return () => {
-      clearInterval(checkInterval);
-      document.removeEventListener('safariplus:dialog-closed', onDialogClosed);
-      document.removeEventListener('safariplus:booking-cancelled', onDialogClosed);
-      window.removeEventListener('safariplus:dialog-closed', onDialogClosed);
-      window.removeEventListener('safariplus:booking-cancelled', onDialogClosed);
-    };
-  }, [isBookingDialogOpen]);
+    return () => clearInterval(timer);
+  }, [isBookingDialogOpen, reloadAfterBooking]);
 
   return (
     <LanguageProvider>
-      <div className={`min-h-screen font-body${isBookingDialogOpen ? ' blur-sm pointer-events-none select-none' : ''}`}>
+      <div className={`min-h-screen font-body${isBookingDialogOpen ? ' pointer-events-none select-none' : ''}`}>
         <Navbar />
         <main>
           <Routes>
@@ -81,8 +93,8 @@ function App() {
           </Routes>
         </main>
         <Footer />
-        <WhatsAppFloat />
-        <AppDownloadModal />
+        {!isBookingDialogOpen && <WhatsAppFloat />}
+        {!isBookingDialogOpen && <AppDownloadModal />}
       </div>
     </LanguageProvider>
   );

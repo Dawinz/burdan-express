@@ -27,19 +27,16 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-burdan-black/80 backdrop-blur-sm'}`}>
+    <nav className={`fixed w-full top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white border-b border-burdan-gray shadow-sm' : 'bg-burdan-black/90 backdrop-blur-sm'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 md:h-20">
+        <div className="flex justify-between items-center h-16 md:h-18">
           <Link to="/" className="flex items-center space-x-3 group" onClick={() => setIsMenuOpen(false)}>
-            <div className={`h-10 w-10 rounded-xl flex items-center justify-center transition-colors duration-300 ${scrolled ? 'bg-burdan-red' : 'bg-burdan-red'}`}>
+            <div className="h-9 w-9 bg-burdan-red flex items-center justify-center">
               <span className="text-white font-heading font-black text-sm tracking-tight">BE</span>
             </div>
             <div className="flex flex-col">
-              <span className={`text-lg font-heading font-bold tracking-wide transition-colors duration-300 ${scrolled ? 'text-burdan-black' : 'text-white'}`}>
-                BURDAN
-              </span>
-              <span className={`text-[10px] font-heading font-medium tracking-[0.3em] -mt-1 transition-colors duration-300 ${scrolled ? 'text-burdan-orange' : 'text-burdan-gold'}`}>
-                EXPRESS
+              <span className={`text-base font-heading font-bold tracking-wide transition-colors duration-300 ${scrolled ? 'text-burdan-black' : 'text-white'}`}>
+                BURDAN EXPRESS
               </span>
             </div>
           </Link>
@@ -52,21 +49,21 @@ const Navbar = () => {
               { path: '/contact', label: t('contact') },
               { path: '/support', label: t('support') },
             ].map(({ path, label }) => (
-              <Link key={path} to={path} className={`px-4 py-2 rounded-lg text-sm font-body font-medium transition-all duration-200 ${
+              <Link key={path} to={path} className={`px-3 py-2 text-sm font-body font-medium transition-all duration-200 ${
                 isActive(path)
-                  ? scrolled ? 'bg-burdan-red text-white' : 'bg-white/20 text-white'
-                  : scrolled ? 'text-burdan-darkgray hover:bg-burdan-gray' : 'text-white/80 hover:text-white hover:bg-white/10'
+                  ? scrolled ? 'text-burdan-red border-b-2 border-burdan-red' : 'text-white border-b-2 border-burdan-orange'
+                  : scrolled ? 'text-burdan-darkgray hover:text-burdan-red' : 'text-white/80 hover:text-white'
               }`}>
                 {label}
               </Link>
             ))}
-            <button onClick={toggleLanguage} className={`ml-2 inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-body font-semibold border transition-all duration-200 ${
-              scrolled ? 'border-burdan-red/20 text-burdan-red hover:bg-burdan-red hover:text-white' : 'border-white/30 text-white hover:bg-white/10'
+            <button onClick={toggleLanguage} className={`ml-3 inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-body font-semibold border transition-all duration-200 ${
+              scrolled ? 'border-burdan-gray text-burdan-black hover:border-burdan-red hover:text-burdan-red' : 'border-white/30 text-white hover:bg-white/10'
             }`} aria-label="Toggle language">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               {language === 'en' ? 'SW' : 'EN'}
             </button>
-            <a href="https://wa.me/255717009600" target="_blank" rel="noopener noreferrer" className="ml-2 bg-green-500 hover:bg-green-600 text-white px-5 py-2.5 rounded-xl font-body font-semibold text-sm transition-all duration-200 hover:shadow-lg hover:shadow-green-500/25">
+            <a href="https://wa.me/255717009600" target="_blank" rel="noopener noreferrer" className="ml-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 font-body font-semibold text-sm transition-colors duration-200">
               WhatsApp
             </a>
           </div>

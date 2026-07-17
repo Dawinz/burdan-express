@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Burdan Express — SafariPlus Test</title>
+  <!-- Official SafariPlus v2 — https://demo.safariyetu.com/safariplus/v1/safariplus.html -->
+  <script type="module" src="https://www.safariyetu.com/safariplus/v2/safariplus.js"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 48px auto; padding: 0 16px; color: #111; }
+    h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+    p { color: #555; margin-bottom: 1.5rem; }
+    button {
+      background: #B91C1C; color: #fff; border: 0; padding: 12px 20px;
+      font-weight: 600; cursor: pointer; margin-right: 8px; margin-bottom: 8px;
+    }
+    button.secondary { background: #374151; }
+    button:hover { opacity: 0.9; }
+    code { background: #f3f4f6; padding: 2px 6px; font-size: 0.85rem; }
+    #log {
+      margin-top: 24px; padding: 12px; background: #111; color: #9ae6b4;
+      font-family: ui-monospace, monospace; font-size: 12px; min-height: 120px;
+      white-space: pre-wrap;
+    }
+    a { color: #B91C1C; }
+  </style>
+</head>
+<body>
+  <h1>Burdan Express — SafariPlus Test</h1>
+  <p>
+    Standalone test page using the official widget API from the
+    <a href="https://demo.safariyetu.com/safariplus/v1/safariplus.html" target="_blank" rel="noopener">SafariPlus setup guide</a>.
+    Operator ID: <code>2203260042</code>
+  </p>
+
+  <button id="book">Book a trip (prefilled)</button>
+  <button id="empty" class="secondary">Open empty search</button>
+  <p style="margin-top:16px"><a href="/">← Back to website</a></p>
+
+  <div id="log">Listening for SafariPlus lifecycle events…\n</div>
+
+  <script type="module">
+    const log = (msg) => {
+      const el = document.getElementById('log');
+      el.textContent += msg + '\n';
+    };
+
+    // Official lifecycle events
+    // https://demo.safariyetu.com/safariplus/v1/examples/embed.html
+    ['safariplus:dialog-opened', 'safariplus:booking-completed', 'safariplus:booking-cancelled', 'safariplus:dialog-closed']
+      .forEach((evt) => {
+        document.addEventListener(evt, (e) => {
+          log(evt + ' ' + JSON.stringify(e.detail || {}));
+        });
+      });
+
+    const waitForSafari = async () => {
+      for (let i = 0; i < 20; i++) {
+        if (window.safariplus && typeof window.safariplus.newTripDialog === 'function') return true;
+        await new Promise((r) => setTimeout(r, 250));
+      }
+      return false;
+    };
+
+    document.getElementById('book').addEventListener('click', async () => {
+      const ready = await waitForSafari();
+      if (!ready) {
+        alert('SafariPlus not loaded yet. Check network / script URL.');
+        return;
+      }
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 2);
+      const departureDate = tomorrow.toISOString().slice(0, 10);
+      log('Opening newTripDialog… ' + departureDate);
+      await window.safariplus.newTripDialog({
+        operatorId: '2203260042',
+        origin: 'dar-es-salaam',
+        destination: 'lindi',
+        departureDate,
+        passengersCount: 1,
+        brand: 'Burdan Express',
+      });
+    });
+
+    document.getElementById('empty').addEventListener('click', async () => {
+      const ready = await waitForSafari();
+      if (!ready) {
+        alert('SafariPlus not loaded yet.');
+        return;
+      }
+      log('Opening empty newTripDialog…');
+      await window.safariplus.newTripDialog({
+        operatorId: '2203260042',
+        brand: 'Burdan Express',
+      });
+    });
+  </script>
+</body>
+</html>
