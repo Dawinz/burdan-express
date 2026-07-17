@@ -22,17 +22,17 @@ function App() {
     let dialogWasSeen = false;
 
     const checkInterval = setInterval(() => {
+      // Only safari-shell indicates an open booking dialog.
+      // .safari-shells-container exists even when idle.
       const shell = document.querySelector('safari-shell');
-      const container = document.querySelector('.safari-shells-container');
       const blocker = document.querySelector('safari-page-blocking-progress');
-      const dialogPresent = Boolean(shell || container || blocker);
+      const dialogPresent = Boolean(shell || blocker);
 
       if (dialogPresent) {
         dialogWasSeen = true;
         return;
       }
 
-      // Only reload after the dialog has opened and then been closed
       if (dialogWasSeen) {
         clearInterval(checkInterval);
         document.body.style.overflow = '';
