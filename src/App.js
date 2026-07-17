@@ -19,16 +19,26 @@ function App() {
   useEffect(() => {
     if (!isBookingDialogOpen) return;
 
+    let dialogWasSeen = false;
+
     const checkInterval = setInterval(() => {
       const shell = document.querySelector('safari-shell');
       const container = document.querySelector('.safari-shells-container');
       const blocker = document.querySelector('safari-page-blocking-progress');
+      const dialogPresent = Boolean(shell || container || blocker);
 
-      if (!shell && !container && !blocker) {
-        setIsBookingDialogOpen(false);
-        document.body.style.overflow = '';
+      if (dialogPresent) {
+        dialogWasSeen = true;
+        return;
       }
-    }, 1000);
+
+      // Only reload after the dialog has opened and then been closed
+      if (dialogWasSeen) {
+        clearInterval(checkInterval);
+        document.body.style.overflow = '';
+        window.location.reload();
+      }
+    }, 800);
 
     return () => clearInterval(checkInterval);
   }, [isBookingDialogOpen]);

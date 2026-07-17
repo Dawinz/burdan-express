@@ -92,6 +92,7 @@ const SearchForm = ({ setIsBookingDialogOpen }) => {
           setIsBookingDialogOpen(false);
           setIsLoading(false);
           setError('');
+          window.location.reload();
         }
       };
 
