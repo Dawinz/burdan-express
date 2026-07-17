@@ -20,6 +20,14 @@ function App() {
     if (!isBookingDialogOpen) return;
 
     let dialogWasSeen = false;
+    let reloading = false;
+
+    const reloadPage = () => {
+      if (reloading) return;
+      reloading = true;
+      document.body.style.overflow = '';
+      window.location.reload();
+    };
 
     const isSafariDialogOpen = () => {
       try {
@@ -28,24 +36,33 @@ function App() {
           return true;
         }
       } catch {}
-      // Fallback: light-DOM blocker (rarely used)
       return Boolean(document.querySelector('safari-page-blocking-progress'));
     };
+
+    const onDialogClosed = () => reloadPage();
+    document.addEventListener('safariplus:dialog-closed', onDialogClosed);
+    document.addEventListener('safariplus:booking-cancelled', onDialogClosed);
+    window.addEventListener('safariplus:dialog-closed', onDialogClosed);
+    window.addEventListener('safariplus:booking-cancelled', onDialogClosed);
 
     const checkInterval = setInterval(() => {
       if (isSafariDialogOpen()) {
         dialogWasSeen = true;
         return;
       }
-
       if (dialogWasSeen) {
         clearInterval(checkInterval);
-        document.body.style.overflow = '';
-        window.location.reload();
+        reloadPage();
       }
     }, 500);
 
-    return () => clearInterval(checkInterval);
+    return () => {
+      clearInterval(checkInterval);
+      document.removeEventListener('safariplus:dialog-closed', onDialogClosed);
+      document.removeEventListener('safariplus:booking-cancelled', onDialogClosed);
+      window.removeEventListener('safariplus:dialog-closed', onDialogClosed);
+      window.removeEventListener('safariplus:booking-cancelled', onDialogClosed);
+    };
   }, [isBookingDialogOpen]);
 
   return (
