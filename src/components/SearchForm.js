@@ -221,8 +221,8 @@ const SearchForm = ({ setIsBookingDialogOpen }) => {
           </div>
         </form>
 
-        <div className="mt-3 sm:mt-5 hidden sm:flex flex-wrap items-center gap-2">
-          <span className="text-xs font-body text-burdan-darkgray/50">{t('popularRoutes')}</span>
+        <div className="mt-3 sm:mt-5 flex flex-wrap items-center gap-1.5 sm:gap-2">
+          <span className="text-xs font-body text-burdan-darkgray/50 w-full sm:w-auto mb-0.5 sm:mb-0">{t('popularRoutes')}</span>
           {routeDefinitions.slice(0, 4).map(({ from, to, fromValue, toValue }) => (
             <button
               key={`${fromValue}-${toValue}`}
