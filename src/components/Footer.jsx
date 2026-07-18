@@ -54,9 +54,9 @@ const Footer = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="py-12 sm:py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10">
+        <div className="py-12 sm:py-14 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8">
           {/* Brand */}
-          <div className="lg:col-span-5">
+          <div className="md:col-span-5">
             <div className="flex items-center gap-3 mb-5">
               <div className="h-11 w-11 bg-burdan-red flex items-center justify-center">
                 <span className="text-white font-heading font-black text-sm">BE</span>
@@ -86,7 +86,7 @@ const Footer = () => {
           </div>
 
           {/* Quick links */}
-          <div className="lg:col-span-3">
+          <div className="md:col-span-3">
             <h4 className="text-xs font-heading font-bold mb-5 uppercase tracking-[0.18em] text-white/40 border-l-2 border-burdan-red pl-3">
               {t('quickLinks')}
             </h4>
@@ -109,7 +109,7 @@ const Footer = () => {
           </div>
 
           {/* Contact */}
-          <div className="lg:col-span-4">
+          <div className="md:col-span-4">
             <h4 className="text-xs font-heading font-bold mb-5 uppercase tracking-[0.18em] text-white/40 border-l-2 border-burdan-red pl-3">
               {t('contactInfo')}
             </h4>
