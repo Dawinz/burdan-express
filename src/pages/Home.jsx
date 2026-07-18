@@ -8,34 +8,26 @@ const Home = ({ setIsBookingDialogOpen, isBookingDialogOpen }) => {
   const { t } = useLanguage();
   return (
     <div className="min-h-screen bg-white">
-      <section className="relative">
-        <Hero />
-        {!isBookingDialogOpen && (
-          <>
-            <div className="booking-form-container absolute inset-x-0 bottom-0 translate-y-1/2 md:translate-y-[40%] z-20 px-3 sm:px-6 pointer-events-none">
-              <div className="max-w-5xl mx-auto pointer-events-auto hidden md:block">
-                <SearchForm setIsBookingDialogOpen={setIsBookingDialogOpen} />
-              </div>
-            </div>
-            <div className="booking-form-container md:hidden absolute inset-0 flex items-center justify-center z-10 px-3 pt-16">
-              <div className="w-full max-w-sm">
-                <SearchForm setIsBookingDialogOpen={setIsBookingDialogOpen} />
-              </div>
-            </div>
-          </>
-        )}
-      </section>
+      <Hero />
 
-      <section className="pt-28 md:pt-40 pb-20 bg-white">
+      {!isBookingDialogOpen && (
+        <div className="booking-form-container relative z-20 px-3 sm:px-6 -mt-10 sm:-mt-16 md:-mt-20">
+          <div className="max-w-5xl mx-auto">
+            <SearchForm setIsBookingDialogOpen={setIsBookingDialogOpen} />
+          </div>
+        </div>
+      )}
+
+      <section className="pt-16 sm:pt-20 md:pt-24 pb-16 md:pb-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mb-12">
-            <p className="text-burdan-red font-body font-semibold text-xs tracking-[0.2em] uppercase mb-3">
+          <div className="max-w-2xl mb-8 sm:mb-12">
+            <p className="text-burdan-red font-body font-semibold text-xs tracking-[0.2em] uppercase mb-2 sm:mb-3">
               {t('motto')}
             </p>
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-burdan-black tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold text-burdan-black tracking-tight">
               {t('whyChoose')}
             </h2>
-            <p className="text-burdan-darkgray/70 font-body mt-3 leading-relaxed">
+            <p className="text-burdan-darkgray/70 font-body text-sm sm:text-base mt-2 sm:mt-3 leading-relaxed">
               {t('experienceDifference')}
             </p>
           </div>
@@ -54,9 +46,9 @@ const Home = ({ setIsBookingDialogOpen, isBookingDialogOpen }) => {
                 desc: t('safeTravelDesc'),
               }
             ].map((feature, i) => (
-              <div key={i} className="p-8 bg-white hover:bg-burdan-cream/80 transition-colors duration-200">
+              <div key={i} className="p-6 sm:p-8 bg-white hover:bg-burdan-cream/80 transition-colors duration-200">
                 <span className="text-burdan-red font-heading font-bold text-sm tracking-widest">0{i + 1}</span>
-                <h3 className="text-lg font-heading font-bold text-burdan-black mt-4 mb-2">{feature.title}</h3>
+                <h3 className="text-base sm:text-lg font-heading font-bold text-burdan-black mt-3 sm:mt-4 mb-2">{feature.title}</h3>
                 <p className="text-burdan-darkgray/65 font-body text-sm leading-relaxed">{feature.desc}</p>
               </div>
             ))}
