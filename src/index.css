@@ -18,7 +18,8 @@ safari-page-blocking-progress,
   z-index: 2147483647 !important;
 }
 
-/* Hide the site's own booking form while the SafariPlus dialog is open */
-body.booking-active .booking-form-container {
+/* While the SafariPlus dialog is open, hide the entire site so nothing
+   sits above or shows behind the booking dialog. */
+body.booking-active .app-shell {
   display: none !important;
 }

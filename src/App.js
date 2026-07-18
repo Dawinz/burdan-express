@@ -24,9 +24,10 @@ import { LanguageProvider } from './contexts/LanguageContext';
 function App() {
   const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
 
-  const reloadAfterBooking = useCallback(() => {
+  const closeBooking = useCallback(() => {
     document.body.style.overflow = '';
-    window.location.reload();
+    document.body.classList.remove('booking-active');
+    setIsBookingDialogOpen(false);
   }, []);
 
   useEffect(() => {
@@ -45,8 +46,7 @@ function App() {
     };
 
     const onClosed = () => {
-      setIsBookingDialogOpen(false);
-      reloadAfterBooking();
+      closeBooking();
     };
 
     document.addEventListener('safariplus:dialog-opened', onOpened);
@@ -60,10 +60,10 @@ function App() {
       document.removeEventListener('safariplus:booking-cancelled', onClosed);
       document.removeEventListener('safariplus:booking-completed', onClosed);
     };
-  }, [reloadAfterBooking]);
+  }, [closeBooking]);
 
   // Fallback: SafariPlus mounts shells in a closed shadow root.
-  // If lifecycle events miss, detect via activeShells then reload on close.
+  // If lifecycle events miss, detect via activeShells then restore on close.
   useEffect(() => {
     if (!isBookingDialogOpen) return;
 
@@ -78,17 +78,17 @@ function App() {
         }
         if (seen) {
           clearInterval(timer);
-          reloadAfterBooking();
+          closeBooking();
         }
       } catch {}
     }, 600);
 
     return () => clearInterval(timer);
-  }, [isBookingDialogOpen, reloadAfterBooking]);
+  }, [isBookingDialogOpen, closeBooking]);
 
   return (
     <LanguageProvider>
-      <div className={`min-h-screen font-body${isBookingDialogOpen ? ' pointer-events-none select-none' : ''}`}>
+      <div className={`app-shell min-h-screen font-body${isBookingDialogOpen ? ' pointer-events-none select-none' : ''}`}>
         <Navbar />
         <main>
           <Routes>
