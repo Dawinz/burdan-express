@@ -2,7 +2,6 @@ import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppFloat from './components/WhatsAppFloat';
-import AppDownloadModal from './components/AppDownloadModal';
 import React, { useState, useEffect, useCallback } from 'react';
 import Home from './pages/Home';
 import RoutesPage from './pages/Routes';
@@ -103,7 +102,6 @@ function App() {
         </main>
         <Footer />
         {!isBookingDialogOpen && <WhatsAppFloat />}
-        {!isBookingDialogOpen && <AppDownloadModal />}
       </div>
     </LanguageProvider>
   );

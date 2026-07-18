@@ -21,9 +21,6 @@ const Home = ({ setIsBookingDialogOpen, isBookingDialogOpen }) => {
       <section className="pt-16 sm:pt-20 md:pt-24 pb-16 md:pb-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mb-8 sm:mb-12">
-            <p className="text-burdan-red font-body font-semibold text-xs tracking-[0.2em] uppercase mb-2 sm:mb-3">
-              {t('motto')}
-            </p>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold text-burdan-black tracking-tight">
               {t('whyChoose')}
             </h2>
