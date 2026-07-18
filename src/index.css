@@ -8,14 +8,14 @@
   }
 }
 
-/* Keep the SafariPlus booking dialog above everything on the site */
+/* Keep the SafariPlus booking dialog above everything on the site.
+   Only override z-index — let SafariPlus manage its own positioning
+   so the cancel/close controls stay reachable. */
 safari-shell,
 safari-shells-container,
 safari-page-blocking-progress,
 .safari-shells-container {
   z-index: 2147483647 !important;
-  position: fixed !important;
-  pointer-events: auto !important;
 }
 
 /* Hide the site's own booking form while the SafariPlus dialog is open */
