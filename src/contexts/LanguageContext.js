@@ -150,6 +150,8 @@ export const LanguageProvider = ({ children }) => {
         amenities: 'AMENITIES',
 
         footerTagline: 'Chapatikavu - Always Available',
+        footerCtaTitle: 'Ready to travel south?',
+        footerCtaSubtitle: 'Book your seat or talk to our team today.',
         footerDescription: 'Burdan Express is a dedicated passenger transportation company operating modern Yutong buses on the Dar es Salaam - Lindi - Masasi route. We are committed to providing safe, comfortable, and reliable travel services across southern Tanzania.',
         quickLinks: 'QUICK LINKS',
         contactInfo: 'CONTACT INFO',
@@ -367,6 +369,8 @@ export const LanguageProvider = ({ children }) => {
         amenities: 'VIFAA',
 
         footerTagline: 'Chapatikavu - Tunapatikana Kila Wakati',
+        footerCtaTitle: 'Tayari kusafiri kusini?',
+        footerCtaSubtitle: 'Kata tiketi yako au ongea na timu yetu leo.',
         footerDescription: 'Burdan Express ni kampuni inayojitolea kusafirisha abiria kwa kutumia mabasi ya kisasa ya Yutong kwenye njia ya Dar es Salaam - Lindi - Masasi. Tumejitolea kutoa huduma salama, za ustarehe, na za kuaminika katika kusini mwa Tanzania.',
         quickLinks: 'VIUNGO VYA HARAKA',
         contactInfo: 'MAELEZO YA MAWASILIANO',
