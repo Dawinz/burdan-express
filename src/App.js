@@ -30,9 +30,18 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (isBookingDialogOpen) {
+      document.body.classList.add('booking-active');
+    } else {
+      document.body.classList.remove('booking-active');
+    }
+  }, [isBookingDialogOpen]);
+
+  useEffect(() => {
     const onOpened = () => {
       setIsBookingDialogOpen(true);
       document.body.style.overflow = 'hidden';
+      document.body.classList.add('booking-active');
     };
 
     const onClosed = () => {
@@ -83,7 +92,7 @@ function App() {
         <Navbar />
         <main>
           <Routes>
-            <Route path="/" element={<Home setIsBookingDialogOpen={setIsBookingDialogOpen} />} />
+            <Route path="/" element={<Home setIsBookingDialogOpen={setIsBookingDialogOpen} isBookingDialogOpen={isBookingDialogOpen} />} />
             <Route path="/routes" element={<RoutesPage />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/contact" element={<Contact />} />

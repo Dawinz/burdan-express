@@ -8,9 +8,17 @@
   }
 }
 
+/* Keep the SafariPlus booking dialog above everything on the site */
 safari-shell,
 safari-shells-container,
 safari-page-blocking-progress,
 .safari-shells-container {
-  z-index: 100000 !important;
+  z-index: 2147483647 !important;
+  position: fixed !important;
+  pointer-events: auto !important;
+}
+
+/* Hide the site's own booking form while the SafariPlus dialog is open */
+body.booking-active .booking-form-container {
+  display: none !important;
 }

@@ -4,22 +4,26 @@ import SearchForm from '../components/SearchForm';
 import Gallery from '../components/Gallery';
 import { useLanguage } from '../contexts/LanguageContext';
 
-const Home = ({ setIsBookingDialogOpen }) => {
+const Home = ({ setIsBookingDialogOpen, isBookingDialogOpen }) => {
   const { t } = useLanguage();
   return (
     <div className="min-h-screen bg-white">
       <section className="relative">
         <Hero />
-        <div className="absolute inset-x-0 bottom-0 translate-y-1/2 md:translate-y-[40%] z-20 px-3 sm:px-6 pointer-events-none">
-          <div className="max-w-5xl mx-auto pointer-events-auto hidden md:block">
-            <SearchForm setIsBookingDialogOpen={setIsBookingDialogOpen} />
-          </div>
-        </div>
-        <div className="md:hidden absolute inset-0 flex items-center justify-center z-10 px-3 pt-16">
-          <div className="w-full max-w-sm">
-            <SearchForm setIsBookingDialogOpen={setIsBookingDialogOpen} />
-          </div>
-        </div>
+        {!isBookingDialogOpen && (
+          <>
+            <div className="booking-form-container absolute inset-x-0 bottom-0 translate-y-1/2 md:translate-y-[40%] z-20 px-3 sm:px-6 pointer-events-none">
+              <div className="max-w-5xl mx-auto pointer-events-auto hidden md:block">
+                <SearchForm setIsBookingDialogOpen={setIsBookingDialogOpen} />
+              </div>
+            </div>
+            <div className="booking-form-container md:hidden absolute inset-0 flex items-center justify-center z-10 px-3 pt-16">
+              <div className="w-full max-w-sm">
+                <SearchForm setIsBookingDialogOpen={setIsBookingDialogOpen} />
+              </div>
+            </div>
+          </>
+        )}
       </section>
 
       <section className="pt-28 md:pt-40 pb-20 bg-white">
