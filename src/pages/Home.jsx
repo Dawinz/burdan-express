@@ -11,7 +11,7 @@ const Home = ({ setIsBookingDialogOpen, isBookingDialogOpen }) => {
       <Hero />
 
       {!isBookingDialogOpen && (
-        <div className="booking-form-container relative z-20 px-3 sm:px-6 -mt-10 sm:-mt-16 md:-mt-20">
+        <div className="booking-form-container relative z-20 px-3 sm:px-6 -mt-5 sm:-mt-16 md:-mt-20">
           <div className="max-w-5xl mx-auto">
             <SearchForm setIsBookingDialogOpen={setIsBookingDialogOpen} />
           </div>
