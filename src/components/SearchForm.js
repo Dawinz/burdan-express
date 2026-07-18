@@ -141,9 +141,9 @@ const SearchForm = ({ setIsBookingDialogOpen }) => {
   return (
     <div className="bg-white border border-burdan-gray shadow-lg p-4 sm:p-6 md:p-7 mx-2 sm:mx-4 relative z-20">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-4 sm:mb-5 sm:flex sm:items-end sm:justify-between gap-4">
+        <div className="mb-3 sm:mb-5 sm:flex sm:items-end sm:justify-between gap-4">
           <div>
-            <h3 className="text-lg sm:text-xl font-heading font-bold text-burdan-black tracking-tight">
+            <h3 className="text-base sm:text-xl font-heading font-bold text-burdan-black tracking-tight">
               {t('findYourJourney')}
             </h3>
             <p className="text-burdan-darkgray/60 font-body text-xs sm:text-sm mt-1 hidden sm:block">
@@ -159,7 +159,7 @@ const SearchForm = ({ setIsBookingDialogOpen }) => {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 sm:gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2.5 sm:gap-3">
             <div>
               <label className="block text-xs font-body font-semibold text-burdan-darkgray/70 mb-1.5 uppercase tracking-wider">{t('from')}</label>
               <SearchableSelect
@@ -204,7 +204,7 @@ const SearchForm = ({ setIsBookingDialogOpen }) => {
                 ))}
               </select>
             </div>
-            <div className="sm:col-span-2 md:col-span-1 flex items-end">
+            <div className="col-span-2 md:col-span-1 flex items-end">
               <button type="submit" disabled={isLoading} className={`w-full font-heading font-bold py-2.5 sm:py-3 px-4 transition-all duration-200 text-sm ${
                 isLoading
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -221,7 +221,7 @@ const SearchForm = ({ setIsBookingDialogOpen }) => {
           </div>
         </form>
 
-        <div className="mt-4 sm:mt-5 flex flex-wrap items-center gap-2">
+        <div className="mt-3 sm:mt-5 hidden sm:flex flex-wrap items-center gap-2">
           <span className="text-xs font-body text-burdan-darkgray/50">{t('popularRoutes')}</span>
           {routeDefinitions.slice(0, 4).map(({ from, to, fromValue, toValue }) => (
             <button
