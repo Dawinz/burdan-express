@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../api_client.dart';
 import '../booking_state.dart';
+import '../models.dart';
 import '../theme.dart';
 import '../utils.dart';
 import 'ticket_screen.dart';
@@ -40,12 +41,25 @@ class _PaymentScreenState extends State<PaymentScreen> {
         contact: {'phone': state.contactPhone, 'email': state.contactEmail},
       );
       setState(() => _status = 'paying');
-      await Future.delayed(const Duration(milliseconds: 1200));
       final paid = await _api.payBooking(
-        reference: booking.reference,
+        tripId: booking.tripId ?? booking.reference,
         method: _method,
+        phoneOverride: state.contactPhone,
       );
-      state.setBooking(paid);
+      state.setBooking(Booking(
+        reference: paid.reference,
+        tripId: paid.tripId,
+        status: paid.status,
+        trip: state.selectedTrip,
+        seats: state.selectedSeats,
+        passengers: state.passengerDetails,
+        amount: paid.amount > 0 ? paid.amount : state.total,
+        currency: state.selectedTrip?.currency ?? 'TZS',
+        paymentMethod: paid.paymentMethod,
+        transactionId: paid.transactionId,
+        qr: paid.qr,
+        gate: paid.gate,
+      ));
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const TicketScreen()));

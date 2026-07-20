@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../api_client.dart';
 import '../booking_state.dart';
 import '../models.dart';
 import '../theme.dart';
@@ -16,98 +15,76 @@ class SeatsScreen extends StatefulWidget {
 }
 
 class _SeatsScreenState extends State<SeatsScreen> {
-  final _api = ApiClient();
-  SeatMap? _map;
-  bool _loading = true;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    final trip = context.read<BookingState>().selectedTrip!;
-    try {
-      final map = await _api.getSeats(trip.id);
-      setState(() {
-        _map = map;
-        _loading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _loading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final state = context.watch<BookingState>();
+    final trip = state.selectedTrip;
+    if (trip == null) {
+      return const Scaffold(body: Center(child: Text('No trip selected')));
+    }
+
     final maxSeats = state.passengers;
     final rowsMap = <int, List<Seat>>{};
-    if (_map != null) {
-      for (final s in _map!.seats) {
-        rowsMap.putIfAbsent(s.row, () => []).add(s);
-      }
+    for (final s in trip.seats) {
+      rowsMap.putIfAbsent(s.row, () => []).add(s);
     }
     final rows = rowsMap.keys.toList()..sort();
+    for (final r in rows) {
+      rowsMap[r]!.sort((a, b) => a.columnIndex.compareTo(b.columnIndex));
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Choose seats')),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(child: Text(_error!))
-              : Column(
-                  children: [
-                    Container(
-                      color: Colors.white,
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _legend(Colors.white, 'Available', border: true),
-                          const SizedBox(width: 16),
-                          _legend(BurdanColors.red, 'Selected'),
-                          const SizedBox(width: 16),
-                          _legend(BurdanColors.gray, 'Taken'),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(border: Border.all(color: BurdanColors.gray)),
-                              child: const Text('Front / Driver',
-                                  style: TextStyle(fontSize: 11, color: BurdanColors.darkGray)),
-                            ),
-                            const SizedBox(height: 16),
-                            ...rows.map((r) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 10),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: rowsMap[r]!.map((seat) {
-                                      return Padding(
-                                        padding: EdgeInsets.only(right: seat.aisleAfter ? 24 : 8),
-                                        child: _seatTile(seat, state),
-                                      );
-                                    }).toList(),
-                                  ),
-                                )),
-                          ],
-                        ),
-                      ),
-                    ),
-                    _summaryBar(state, maxSeats),
-                  ],
-                ),
+      body: Column(
+        children: [
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _legend(Colors.white, 'Available', border: true),
+                const SizedBox(width: 16),
+                _legend(BurdanColors.red, 'Selected'),
+                const SizedBox(width: 16),
+                _legend(BurdanColors.gray, 'Taken'),
+              ],
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(border: Border.all(color: BurdanColors.gray)),
+                    child: const Text('Front / Driver',
+                        style: TextStyle(fontSize: 11, color: BurdanColors.darkGray)),
+                  ),
+                  const SizedBox(height: 16),
+                  if (rows.isEmpty)
+                    const Text('No seat map returned for this trip.')
+                  else
+                    ...rows.map((r) => Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: rowsMap[r]!.map((seat) {
+                              return Padding(
+                                padding: EdgeInsets.only(right: seat.aisleAfter ? 24 : 8),
+                                child: _seatTile(seat, state),
+                              );
+                            }).toList(),
+                          ),
+                        )),
+                ],
+              ),
+            ),
+          ),
+          _summaryBar(state, maxSeats),
+        ],
+      ),
     );
   }
 

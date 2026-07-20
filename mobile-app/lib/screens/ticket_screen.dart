@@ -18,6 +18,9 @@ class TicketScreen extends StatelessWidget {
       return const Scaffold(body: Center(child: Text('No booking')));
     }
     final trip = booking.trip;
+    if (trip == null) {
+      return const Scaffold(body: Center(child: Text('No trip on booking')));
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Your ticket'), automaticallyImplyLeading: false),

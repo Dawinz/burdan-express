@@ -7,7 +7,7 @@ async function request(path, options = {}) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(data.error || `Request failed (${res.status})`);
+    throw new Error(data.error || data.detail || `Request failed (${res.status})`);
   }
   return data;
 }
@@ -21,11 +21,11 @@ export const api = {
         destination
       )}&date=${encodeURIComponent(date)}&passengers=${passengers}`
     ),
-  getSeats: (tripId) => request(`/api/trips/${encodeURIComponent(tripId)}/seats`),
   createBooking: (payload) =>
     request('/api/bookings', { method: 'POST', body: JSON.stringify(payload) }),
-  payBooking: (reference, payload) =>
-    request(`/api/bookings/${encodeURIComponent(reference)}/pay`, {
+  listPayments: (tripId) => request(`/api/bookings/${encodeURIComponent(tripId)}/payments`),
+  payBooking: (tripId, payload) =>
+    request(`/api/bookings/${encodeURIComponent(tripId)}/pay`, {
       method: 'POST',
       body: JSON.stringify(payload),
     }),

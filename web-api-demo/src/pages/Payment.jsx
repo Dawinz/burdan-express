@@ -5,16 +5,16 @@ import { useBooking } from '../store.jsx';
 import { formatMoney } from '../utils/format.js';
 
 const methods = [
-  { id: 'mpesa', label: 'M-Pesa', hint: 'Vodacom mobile money' },
-  { id: 'airtel', label: 'Airtel Money', hint: 'Airtel mobile money' },
-  { id: 'card', label: 'Card', hint: 'Visa / Mastercard' },
+  { id: 'mpesa', label: 'M-Pesa', hint: 'Vodacom mobile money (live SafariPlus)' },
+  { id: 'airtel', label: 'Airtel Money', hint: 'Airtel mobile money (live SafariPlus)' },
+  { id: 'card', label: 'Card', hint: 'Card payment if offered by operator' },
 ];
 
 export default function Payment() {
   const navigate = useNavigate();
   const { selectedTrip, selectedSeats, passengers, contact, setBooking } = useBooking();
   const [method, setMethod] = useState('mpesa');
-  const [status, setStatus] = useState('idle'); // idle | booking | paying | error
+  const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
 
   if (!selectedTrip || selectedSeats.length === 0) {
@@ -29,21 +29,27 @@ export default function Payment() {
     try {
       setStatus('booking');
       const { booking } = await api.createBooking({
-        tripId: selectedTrip.id,
+        trip: selectedTrip,
         seats: selectedSeats,
         passengers,
         contact,
       });
 
       setStatus('paying');
-      // small delay to mimic a mobile-money prompt
-      await new Promise((r) => setTimeout(r, 1200));
-      const { booking: paid } = await api.payBooking(booking.reference, {
+      const { booking: paid } = await api.payBooking(booking.tripId, {
         method,
-        booking, // fallback so stateless API can still complete
+        phoneOverride: contact.phone,
       });
 
-      setBooking(paid);
+      // Prefer ticket fields; keep trip summary from our selection.
+      setBooking({
+        ...paid,
+        trip: selectedTrip,
+        seats: selectedSeats,
+        passengers,
+        amount: paid.amount || total,
+        currency: selectedTrip.currency,
+      });
       navigate('/ticket');
     } catch (e) {
       setError(e.message || 'Payment failed. Please try again.');
@@ -59,6 +65,10 @@ export default function Payment() {
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 bg-white border border-burdan-gray p-5">
           <h3 className="font-heading font-bold text-burdan-black mb-4">Choose a payment method</h3>
+          <p className="text-xs text-burdan-darkgray/55 mb-4">
+            Powered by SafariPlus REST — selecting Pay creates a real Burdan Express reservation
+            and may trigger a live USSD prompt on the contact phone.
+          </p>
           <div className="space-y-3">
             {methods.map((m) => (
               <label
@@ -91,7 +101,7 @@ export default function Payment() {
           {busy && (
             <div className="mt-4 p-3 bg-burdan-cream border border-burdan-gray text-sm text-burdan-darkgray flex items-center gap-2">
               <span className="w-4 h-4 border-2 border-burdan-red border-t-transparent rounded-full animate-spin" />
-              {status === 'booking' ? 'Reserving your seats…' : 'Confirming payment…'}
+              {status === 'booking' ? 'Creating SafariPlus trip…' : 'Initiating payment…'}
             </div>
           )}
         </div>
@@ -99,7 +109,7 @@ export default function Payment() {
         <div className="bg-white border border-burdan-gray p-5 h-fit">
           <h3 className="font-heading font-bold text-burdan-black mb-3">Summary</h3>
           <dl className="text-sm space-y-2">
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-3">
               <dt className="text-burdan-darkgray/60">Route</dt>
               <dd className="font-semibold text-right">
                 {selectedTrip.originName} → {selectedTrip.destinationName}
@@ -127,9 +137,6 @@ export default function Payment() {
           >
             {busy ? 'Processing…' : `Pay ${formatMoney(total)}`}
           </button>
-          <p className="text-[11px] text-burdan-darkgray/45 mt-2 text-center">
-            Demo only — no real payment is charged.
-          </p>
         </div>
       </div>
     </div>

@@ -115,8 +115,8 @@ class _ResultsScreenState extends State<ResultsScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 color: BurdanColors.lightRed,
-                child: Text('★ ${trip.bus.rating}',
-                    style: const TextStyle(
+                child: const Text('Live API',
+                    style: TextStyle(
                         color: BurdanColors.red, fontSize: 11, fontWeight: FontWeight.w600)),
               ),
             ],
@@ -135,7 +135,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
               Expanded(
                 child: Column(
                   children: [
-                    Text(formatDuration(trip.durationHours),
+                    Text(trip.fareName ?? trip.bus.model,
                         style: const TextStyle(fontSize: 11, color: BurdanColors.darkGray)),
                     const Divider(color: BurdanColors.gray, height: 12),
                   ],

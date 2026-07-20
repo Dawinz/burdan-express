@@ -7,6 +7,7 @@ import {
   dateToYmd,
   todayInTanzania,
 } from '../utils/travelDate';
+import { withSafariPlusAuth } from '../config/safariplus';
 
 const SearchForm = ({ setIsBookingDialogOpen }) => {
   const { t } = useLanguage();
@@ -81,14 +82,14 @@ const SearchForm = ({ setIsBookingDialogOpen }) => {
     }
 
     try {
-      const bookingData = {
-        operatorId: '2203260042',
+      // Official widget API: apiKey + operatorId + brand
+      // https://demo.safariyetu.com/safariplus/v1/examples/embed.html
+      const bookingData = withSafariPlusAuth({
         origin: formData.from,
         destination: formData.to,
         departureDate: formData.date,
         passengersCount: parseInt(formData.passengers, 10),
-        brand: 'Burdan Express',
-      };
+      });
 
       scrollManagerRef.current = SafariYetuScrollManager.createInstance();
       setIsLoading(true);

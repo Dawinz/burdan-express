@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api.js';
 import { useBooking } from '../store.jsx';
-import { formatMoney, formatDuration, formatDate } from '../utils/format.js';
+import { formatMoney, formatDate } from '../utils/format.js';
 
 export default function Results() {
   const navigate = useNavigate();
@@ -79,7 +79,7 @@ export default function Results() {
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-heading font-bold text-burdan-black">{trip.bus.name}</span>
                   <span className="text-[11px] bg-burdan-lightred text-burdan-red px-1.5 py-0.5 font-semibold">
-                    ★ {trip.bus.rating}
+                    Live API
                   </span>
                 </div>
                 <div className="flex items-center gap-3 text-burdan-black">
@@ -89,7 +89,7 @@ export default function Results() {
                   </div>
                   <div className="flex-1 flex flex-col items-center min-w-[70px]">
                     <span className="text-[11px] text-burdan-darkgray/50">
-                      {formatDuration(trip.durationHours)}
+                      {trip.fareName || trip.bus.model}
                     </span>
                     <span className="w-full h-px bg-burdan-gray relative">
                       <span className="absolute -right-1 -top-1 w-2 h-2 rounded-full bg-burdan-red" />

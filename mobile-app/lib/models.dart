@@ -25,16 +25,19 @@ class BusInfo {
   });
 
   factory BusInfo.fromJson(Map<String, dynamic> j) => BusInfo(
-        id: j['id'],
-        name: j['name'],
-        model: j['model'],
-        plate: j['plate'],
-        rating: (j['rating'] as num).toDouble(),
+        id: j['id']?.toString() ?? '',
+        name: j['name'] ?? '',
+        model: j['model'] ?? '',
+        plate: j['plate'] ?? '',
+        rating: (j['rating'] as num?)?.toDouble() ?? 4.8,
       );
 }
 
 class Trip {
   final String id;
+  final String safariId;
+  final String fareQuoteId;
+  final String serviceClassId;
   final String origin;
   final String originName;
   final String destination;
@@ -43,16 +46,23 @@ class Trip {
   final String departureTime;
   final String arrivalTime;
   final bool arrivesNextDay;
-  final double durationHours;
+  final double? durationHours;
   final int price;
   final String currency;
   final BusInfo bus;
   final List<String> amenities;
   final int totalSeats;
   final int seatsAvailable;
+  final List<Seat> seats;
+  final List<Map<String, dynamic>> pickupPoints;
+  final List<Map<String, dynamic>> dropoffPoints;
+  final String? fareName;
 
   Trip({
     required this.id,
+    required this.safariId,
+    required this.fareQuoteId,
+    required this.serviceClassId,
     required this.origin,
     required this.originName,
     required this.destination,
@@ -68,29 +78,48 @@ class Trip {
     required this.amenities,
     required this.totalSeats,
     required this.seatsAvailable,
+    required this.seats,
+    required this.pickupPoints,
+    required this.dropoffPoints,
+    this.fareName,
   });
 
-  factory Trip.fromJson(Map<String, dynamic> j) => Trip(
-        id: j['id'],
-        origin: j['origin'],
-        originName: j['originName'],
-        destination: j['destination'],
-        destinationName: j['destinationName'],
-        date: j['date'],
-        departureTime: j['departureTime'],
-        arrivalTime: j['arrivalTime'],
-        arrivesNextDay: j['arrivesNextDay'] ?? false,
-        durationHours: (j['durationHours'] as num).toDouble(),
-        price: (j['price'] as num).toInt(),
-        currency: j['currency'] ?? 'TZS',
-        bus: BusInfo.fromJson(j['bus']),
-        amenities: List<String>.from(j['amenities'] ?? []),
-        totalSeats: (j['totalSeats'] as num).toInt(),
-        seatsAvailable: (j['seatsAvailable'] as num).toInt(),
-      );
+  factory Trip.fromJson(Map<String, dynamic> j) {
+    final rawSeats = (j['seats'] as List?) ?? [];
+    return Trip(
+      id: j['id'],
+      safariId: j['safariId'] ?? '',
+      fareQuoteId: j['fareQuoteId'] ?? '',
+      serviceClassId: j['serviceClassId'] ?? '',
+      origin: j['origin']?.toString() ?? '',
+      originName: j['originName'] ?? '',
+      destination: j['destination']?.toString() ?? '',
+      destinationName: j['destinationName'] ?? '',
+      date: j['date'] ?? '',
+      departureTime: j['departureTime'] ?? '',
+      arrivalTime: j['arrivalTime'] ?? '',
+      arrivesNextDay: j['arrivesNextDay'] ?? false,
+      durationHours: (j['durationHours'] as num?)?.toDouble(),
+      price: (j['price'] as num?)?.toInt() ?? 0,
+      currency: j['currency'] ?? 'TZS',
+      bus: BusInfo.fromJson(j['bus'] ?? {}),
+      amenities: List<String>.from(j['amenities'] ?? []),
+      totalSeats: (j['totalSeats'] as num?)?.toInt() ?? rawSeats.length,
+      seatsAvailable: (j['seatsAvailable'] as num?)?.toInt() ?? 0,
+      seats: rawSeats.map((s) => Seat.fromJson(s is Map<String, dynamic> ? s : {})).toList(),
+      pickupPoints: List<Map<String, dynamic>>.from(
+          (j['pickupPoints'] as List?)?.map((e) => Map<String, dynamic>.from(e)) ?? []),
+      dropoffPoints: List<Map<String, dynamic>>.from(
+          (j['dropoffPoints'] as List?)?.map((e) => Map<String, dynamic>.from(e)) ?? []),
+      fareName: j['fareName'],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'id': id,
+        'safariId': safariId,
+        'fareQuoteId': fareQuoteId,
+        'serviceClassId': serviceClassId,
         'origin': origin,
         'originName': originName,
         'destination': destination,
@@ -112,55 +141,45 @@ class Trip {
         'amenities': amenities,
         'totalSeats': totalSeats,
         'seatsAvailable': seatsAvailable,
+        'seats': seats
+            .map((s) => {
+                  'label': s.label,
+                  'rowIndex': s.row,
+                  'columnIndex': s.columnIndex,
+                  'available': !s.occupied,
+                })
+            .toList(),
+        'pickupPoints': pickupPoints,
+        'dropoffPoints': dropoffPoints,
+        'fareName': fareName,
       };
 }
 
 class Seat {
   final String label;
   final int row;
-  final String col;
+  final int columnIndex;
   final bool aisleAfter;
   final bool occupied;
 
   Seat({
     required this.label,
     required this.row,
-    required this.col,
+    required this.columnIndex,
     required this.aisleAfter,
     required this.occupied,
   });
 
-  factory Seat.fromJson(Map<String, dynamic> j) => Seat(
-        label: j['label'],
-        row: (j['row'] as num).toInt(),
-        col: j['col'],
-        aisleAfter: j['aisleAfter'] ?? false,
-        occupied: j['occupied'] ?? false,
-      );
-}
-
-class SeatMap {
-  final String tripId;
-  final int rows;
-  final int price;
-  final String currency;
-  final List<Seat> seats;
-
-  SeatMap({
-    required this.tripId,
-    required this.rows,
-    required this.price,
-    required this.currency,
-    required this.seats,
-  });
-
-  factory SeatMap.fromJson(Map<String, dynamic> j) => SeatMap(
-        tripId: j['tripId'],
-        rows: (j['rows'] as num).toInt(),
-        price: (j['price'] as num).toInt(),
-        currency: j['currency'] ?? 'TZS',
-        seats: (j['seats'] as List).map((s) => Seat.fromJson(s)).toList(),
-      );
+  factory Seat.fromJson(Map<String, dynamic> j) {
+    final columnIndex = (j['columnIndex'] as num?)?.toInt() ?? 0;
+    return Seat(
+      label: j['label']?.toString() ?? '',
+      row: (j['rowIndex'] as num?)?.toInt() ?? (j['row'] as num?)?.toInt() ?? 0,
+      columnIndex: columnIndex,
+      aisleAfter: j['aisleAfter'] == true || columnIndex == 1 || columnIndex == 3,
+      occupied: j['available'] == false || j['occupied'] == true,
+    );
+  }
 }
 
 class Passenger {
@@ -181,8 +200,9 @@ class Passenger {
 
 class Booking {
   final String reference;
+  final String? tripId;
   final String status;
-  final Trip trip;
+  final Trip? trip;
   final List<String> seats;
   final List<Passenger> passengers;
   final int amount;
@@ -194,8 +214,9 @@ class Booking {
 
   Booking({
     required this.reference,
+    this.tripId,
     required this.status,
-    required this.trip,
+    this.trip,
     required this.seats,
     required this.passengers,
     required this.amount,
@@ -210,9 +231,10 @@ class Booking {
     final payment = j['payment'] as Map<String, dynamic>?;
     final ticket = j['ticket'] as Map<String, dynamic>?;
     return Booking(
-      reference: j['reference'],
-      status: j['status'],
-      trip: Trip.fromJson(j['trip']),
+      reference: j['reference']?.toString() ?? '',
+      tripId: j['tripId']?.toString(),
+      status: j['status'] ?? 'reserved',
+      trip: j['trip'] != null ? Trip.fromJson(j['trip']) : null,
       seats: List<String>.from(j['seats'] ?? []),
       passengers: ((j['passengers'] as List?) ?? [])
           .map((p) => Passenger(
@@ -222,7 +244,7 @@ class Booking {
                 seat: p['seat'] ?? '',
               ))
           .toList(),
-      amount: (j['amount'] as num).toInt(),
+      amount: (j['amount'] as num?)?.toInt() ?? 0,
       currency: j['currency'] ?? 'TZS',
       paymentMethod: payment?['method'],
       transactionId: payment?['transactionId'],

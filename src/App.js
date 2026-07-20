@@ -11,6 +11,7 @@ import Book from './pages/Book';
 import Support from './pages/Support';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { configureSafariPlusWidget } from './config/safariplus';
 
 /**
  * SafariPlus lifecycle (official docs):
@@ -22,6 +23,10 @@ import { LanguageProvider } from './contexts/LanguageContext';
  */
 function App() {
   const [isBookingDialogOpen, setIsBookingDialogOpen] = useState(false);
+
+  useEffect(() => {
+    configureSafariPlusWidget();
+  }, []);
 
   const closeBooking = useCallback(() => {
     document.body.style.overflow = '';

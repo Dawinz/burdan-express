@@ -20,9 +20,10 @@ class ApiClient {
     if (res.statusCode >= 200 && res.statusCode < 300) {
       return body as Map<String, dynamic>;
     }
-    throw ApiException((body is Map && body['error'] != null)
-        ? body['error']
-        : 'Request failed (${res.statusCode})');
+    final map = body is Map ? body : <String, dynamic>{};
+    throw ApiException(map['error']?.toString() ??
+        map['detail']?.toString() ??
+        'Request failed (${res.statusCode})');
   }
 
   Future<List<City>> getCities() async {
@@ -48,12 +49,6 @@ class ApiClient {
     return (data['trips'] as List).map((t) => Trip.fromJson(t)).toList();
   }
 
-  Future<SeatMap> getSeats(String tripId) async {
-    final res = await http.get(Uri.parse('$base/api/trips/$tripId/seats'));
-    final data = _decode(res);
-    return SeatMap.fromJson(data);
-  }
-
   Future<Booking> createBooking({
     required Trip trip,
     required List<String> seats,
@@ -64,7 +59,7 @@ class ApiClient {
       Uri.parse('$base/api/bookings'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        'tripId': trip.id,
+        'trip': trip.toJson(),
         'seats': seats,
         'passengers': passengers.map((p) => p.toJson()).toList(),
         'contact': contact,
@@ -75,14 +70,17 @@ class ApiClient {
   }
 
   Future<Booking> payBooking({
-    required String reference,
+    required String tripId,
     required String method,
-    Map<String, dynamic>? fallbackBooking,
+    String? phoneOverride,
   }) async {
     final res = await http.post(
-      Uri.parse('$base/api/bookings/$reference/pay'),
+      Uri.parse('$base/api/bookings/$tripId/pay'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'method': method, if (fallbackBooking != null) 'booking': fallbackBooking}),
+      body: jsonEncode({
+        'method': method,
+        if (phoneOverride != null) 'phoneOverride': phoneOverride,
+      }),
     );
     final data = _decode(res);
     return Booking.fromJson(data['booking']);

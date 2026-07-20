@@ -1,41 +1,44 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../api.js';
 import { useBooking } from '../store.jsx';
 import { formatMoney } from '../utils/format.js';
+
+function mapSeats(rawSeats = []) {
+  return rawSeats.map((s) => ({
+    label: String(s.label),
+    row: s.rowIndex ?? s.row ?? 0,
+    columnIndex: s.columnIndex ?? 0,
+    aisleAfter: (s.columnIndex ?? 0) === 1 || (s.columnIndex ?? 0) === 3,
+    occupied: s.available === false || s.occupied === true,
+  }));
+}
 
 export default function Seats() {
   const navigate = useNavigate();
   const { search, selectedTrip, selectedSeats, setSelectedSeats } = useBooking();
-  const [seatMap, setSeatMap] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const maxSeats = search.passengers || 1;
 
-  useEffect(() => {
-    if (!selectedTrip) {
-      navigate('/');
-      return;
-    }
-    api
-      .getSeats(selectedTrip.id)
-      .then(setSeatMap)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const seats = useMemo(() => mapSeats(selectedTrip?.seats || []), [selectedTrip]);
 
   const rows = useMemo(() => {
-    if (!seatMap) return [];
     const byRow = {};
-    seatMap.seats.forEach((s) => {
+    seats.forEach((s) => {
       byRow[s.row] = byRow[s.row] || [];
       byRow[s.row].push(s);
     });
+    Object.values(byRow).forEach((row) =>
+      row.sort((a, b) => a.columnIndex - b.columnIndex)
+    );
     return Object.keys(byRow)
+      .map(Number)
       .sort((a, b) => a - b)
       .map((r) => byRow[r]);
-  }, [seatMap]);
+  }, [seats]);
+
+  if (!selectedTrip) {
+    navigate('/');
+    return null;
+  }
 
   const toggle = (seat) => {
     if (seat.occupied) return;
@@ -52,13 +55,11 @@ export default function Seats() {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
       <h1 className="font-heading font-bold text-xl text-burdan-black mb-1">Choose your seats</h1>
       <p className="text-burdan-darkgray/60 text-sm mb-5">
-        Select {maxSeats} {maxSeats > 1 ? 'seats' : 'seat'} · {selectedTrip?.bus.name}
+        Select {maxSeats} {maxSeats > 1 ? 'seats' : 'seat'} · {selectedTrip?.bus.name} · Live SafariPlus map
       </p>
 
-      {error && <div className="p-4 bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>}
-
       <div className="grid md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 bg-white border border-burdan-gray p-5">
+        <div className="md:col-span-2 bg-white border border-burdan-gray p-5 overflow-x-auto">
           <div className="flex items-center gap-4 mb-5 text-xs font-body">
             <span className="flex items-center gap-1.5">
               <span className="w-4 h-4 border border-burdan-gray bg-white inline-block" /> Available
@@ -71,12 +72,12 @@ export default function Seats() {
             </span>
           </div>
 
-          {loading && <div className="h-64 bg-burdan-cream animate-pulse" />}
-
-          {!loading && seatMap && (
-            <div className="inline-block">
-              <div className="text-center text-[11px] text-burdan-darkgray/50 mb-3 border border-burdan-gray py-1 px-3 inline-block ml-auto">
-                Driver ▾
+          {rows.length === 0 ? (
+            <div className="text-sm text-burdan-darkgray/60">No seat map returned for this trip.</div>
+          ) : (
+            <div className="inline-block min-w-full">
+              <div className="text-center text-[11px] text-burdan-darkgray/50 mb-3 border border-burdan-gray py-1 px-3 inline-block">
+                Front / Driver
               </div>
               <div className="space-y-2">
                 {rows.map((row, ri) => (
@@ -97,7 +98,7 @@ export default function Seats() {
                         >
                           {seat.label}
                         </button>
-                        {seat.aisleAfter && <span className="w-5" />}
+                        {seat.aisleAfter && <span className="w-4" />}
                       </React.Fragment>
                     ))}
                   </div>
@@ -110,15 +111,15 @@ export default function Seats() {
         <div className="bg-white border border-burdan-gray p-5 h-fit">
           <h3 className="font-heading font-bold text-burdan-black mb-3">Summary</h3>
           <dl className="text-sm space-y-2">
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-3">
               <dt className="text-burdan-darkgray/60">Route</dt>
               <dd className="font-semibold text-right">
-                {selectedTrip?.originName} → {selectedTrip?.destinationName}
+                {selectedTrip.originName} → {selectedTrip.destinationName}
               </dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-burdan-darkgray/60">Departure</dt>
-              <dd className="font-semibold">{selectedTrip?.departureTime}</dd>
+              <dd className="font-semibold">{selectedTrip.departureTime}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-burdan-darkgray/60">Seats</dt>

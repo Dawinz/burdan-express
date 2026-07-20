@@ -1,129 +1,113 @@
 # Burdan Express — API-Powered Booking Demos
 
-This repository now contains **two additional demo versions** that show how a
-Burdan Express booking experience looks when it is built on a **real HTTP API**
-(search → seat selection → passenger details → payment → digital ticket),
-instead of embedding a third‑party booking widget script.
+These demos use the **official SafariPlus REST API v2** with Burdan’s live
+operator account (`2203260042`), authenticated via `X-API-Key`.
 
-There are three new folders:
+Docs:
+- Widget embed: https://demo.safariyetu.com/safariplus/v1/examples/embed.html
+- REST API: https://demo.safariyetu.com/safariplus/v2/docs
 
-| Folder          | What it is                                    | Tech                         |
-| --------------- | --------------------------------------------- | ---------------------------- |
-| `mock-api/`     | Shared mock booking API (fake but realistic)  | Node.js + Express            |
-| `web-api-demo/` | Professional booking **website**              | React + Vite + Tailwind CSS  |
-| `mobile-app/`   | Professional booking **mobile app**           | Flutter (iOS / Android / web)|
+| Folder | What it is | Tech |
+| --- | --- | --- |
+| `mock-api/` | Server-side SafariPlus proxy (keeps API key private) | Node.js + Express |
+| `web-api-demo/` | Professional booking **website** | React + Vite + Tailwind |
+| `mobile-app/` | Professional booking **mobile app** | Flutter |
 
-> All data is **fake** and no real payment is charged. These are demonstrations.
-
----
-
-## Live links (already deployed)
-
-- **Web demo:** https://web-api-demo-sigma.vercel.app
-- **Mock API:** https://mock-api-jet-theta.vercel.app
-
-Both the web app and the mobile app talk to the same live mock API, so the whole
-flow works out of the box.
+The main marketing site (`src/`) uses the official SafariPlus **widget** with
+`apiKey` + `operatorId` + `brand`, per the embed guide.
 
 ---
 
-## The booking flow (both web & mobile)
+## Live links
 
-1. **Search** — pick origin, destination, date, passengers (cities load from the API).
-2. **Trips** — live list of departures with bus, times, price and seats available.
-3. **Seats** — interactive seat map; choose your exact seat(s).
-4. **Details** — enter passenger names and contact.
-5. **Payment** — choose M‑Pesa / Airtel Money / Card (mock).
-6. **Ticket** — instant digital e‑ticket with a QR code.
+- Marketing site (widget): https://burdan-express.vercel.app
+- Web API demo: https://web-api-demo-sigma.vercel.app
+- Booking API proxy: https://mock-api-jet-theta.vercel.app
 
 ---
 
-## Mock API
+## Authentication
 
-### Run locally
+```http
+X-API-Key: <your-safariplus-key>
+```
+
+Set these server env vars for the proxy (`mock-api/`):
+
+```bash
+SAFARIPLUS_API_KEY=sp_...
+SAFARIPLUS_OPERATOR_ID=2203260042
+SAFARIPLUS_BASE=https://www.safariyetu.com/safariplus
+```
+
+For the marketing site (CRA):
+
+```bash
+REACT_APP_SAFARIPLUS_API_KEY=sp_...
+```
+
+Never commit real keys. Use `.env` locally (gitignored) and Vercel project env vars in production.
+
+---
+
+## Booking flow (web & mobile)
+
+1. Search — cities + live SafariPlus `/v2/searches`
+2. Trips — real Burdan departures, fares, seat counts
+3. Seats — live seat map from the search result
+4. Details — passenger + contact
+5. Payment — creates a real trip via `POST /v2/trips`, then initiates payment
+6. Ticket — reference + QR
+
+> Payment may trigger a **live USSD** prompt on the contact phone number.
+
+---
+
+## Run locally
+
+### 1) API proxy
 
 ```bash
 cd mock-api
+cp .env.example .env   # paste your API key
 npm install
-npm start          # http://localhost:4000
+npm start              # http://localhost:4000
 ```
 
-### Endpoints
-
-```
-GET  /api/cities
-GET  /api/trips?origin=&destination=&date=&passengers=
-GET  /api/trips/:id
-GET  /api/trips/:id/seats
-POST /api/bookings
-POST /api/bookings/:reference/pay
-GET  /api/bookings/:reference
-```
-
-This is where a **real** SafariPlus (or any provider) REST integration would
-slot in later — the clients only depend on this HTTP contract, not on an
-embedded script.
-
----
-
-## Web demo (`web-api-demo`)
-
-### Run locally
-
-```bash
-# 1) start the mock API first (see above)
-cd web-api-demo
-npm install
-npm run dev        # http://localhost:5175  (uses http://localhost:4000 by default)
-```
-
-The production build points at the deployed API via `.env.production`
-(`VITE_API_BASE`).
-
-### Deploy
+### 2) Web demo
 
 ```bash
 cd web-api-demo
-vercel --prod
+npm install
+npm run dev            # http://localhost:5175 → localhost:4000
 ```
 
----
-
-## Mobile app (`mobile-app`, Flutter)
-
-### Run locally
+### 3) Flutter app
 
 ```bash
 cd mobile-app
 flutter pub get
-
-# Against the live deployed API (default):
-flutter run
-
-# Against a local mock API:
 flutter run --dart-define=API_BASE=http://localhost:4000
 ```
 
-Runs on an iOS simulator, Android emulator, a physical device, or Chrome
-(`flutter run -d chrome`).
-
-### Build
+### 4) Marketing site widget
 
 ```bash
-flutter build apk        # Android
-flutter build ios        # iOS (needs Xcode)
-flutter build web        # Web
+# repo root
+echo 'REACT_APP_SAFARIPLUS_API_KEY=sp_...' > .env
+npm start
 ```
-
-The API base URL is set in `lib/config.dart` (override with
-`--dart-define=API_BASE=...`).
 
 ---
 
-## Why this is more professional than the widget script
+## Proxy endpoints
 
-- **Full control of the UX** — your own seat map, branding, copy and steps.
-- **Consistent across web & mobile** — one API, two native-feeling front ends.
-- **No screen-blocking third-party overlay** — everything is first‑party UI.
-- **Swappable backend** — replace the mock API with the real provider's REST API
-  without changing the apps.
+```
+GET  /api/cities
+GET  /api/trips?origin=&destination=&date=&passengers=
+POST /api/bookings
+GET  /api/bookings/:tripId/payments
+POST /api/bookings/:tripId/pay
+GET  /api/bookings/:tripId
+DELETE /api/bookings/:tripId
+```

@@ -28,25 +28,28 @@
 <body>
   <h1>Burdan Express — SafariPlus Test</h1>
   <p>
-    Standalone test page using the official widget API from the
-    <a href="https://demo.safariyetu.com/safariplus/v1/safariplus.html" target="_blank" rel="noopener">SafariPlus setup guide</a>.
-    Operator ID: <code>2203260042</code>
+    Standalone test using the official widget API from the
+    <a href="https://demo.safariyetu.com/safariplus/v1/examples/embed.html" target="_blank" rel="noopener">SafariPlus embed guide</a>.
+    Operator ID: <code>2203260042</code> · Authenticated with <code>apiKey</code>.
   </p>
 
   <button id="book">Book a trip (prefilled)</button>
   <button id="empty" class="secondary">Open empty search</button>
   <p style="margin-top:16px"><a href="/">← Back to website</a></p>
 
-  <div id="log">Listening for SafariPlus lifecycle events…\n</div>
+  <div id="log">Listening for SafariPlus lifecycle events…
+</div>
 
   <script type="module">
+    // Replace with your origin-locked key from the SafariYetu dashboard when testing elsewhere.
+    const API_KEY = 'sp_2Xkp7FWMHPpHa9q2I-6u5gRci137Q2pOzurV7XqMQGI';
+    const OPERATOR_ID = '2203260042';
+
     const log = (msg) => {
       const el = document.getElementById('log');
       el.textContent += msg + '\n';
     };
 
-    // Official lifecycle events
-    // https://demo.safariyetu.com/safariplus/v1/examples/embed.html
     ['safariplus:dialog-opened', 'safariplus:booking-completed', 'safariplus:booking-cancelled', 'safariplus:dialog-closed']
       .forEach((evt) => {
         document.addEventListener(evt, (e) => {
@@ -62,18 +65,27 @@
       return false;
     };
 
+    const configure = () => {
+      if (window.safariplus && typeof window.safariplus.configure === 'function') {
+        window.safariplus.configure({ apiKey: API_KEY });
+        log('Configured safariplus with apiKey');
+      }
+    };
+
     document.getElementById('book').addEventListener('click', async () => {
       const ready = await waitForSafari();
       if (!ready) {
-        alert('SafariPlus not loaded yet. Check network / script URL.');
+        alert('SafariPlus not loaded yet — Check network / script URL.');
         return;
       }
+      configure();
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 2);
       const departureDate = tomorrow.toISOString().slice(0, 10);
       log('Opening newTripDialog… ' + departureDate);
       await window.safariplus.newTripDialog({
-        operatorId: '2203260042',
+        apiKey: API_KEY,
+        operatorId: OPERATOR_ID,
         origin: 'dar-es-salaam',
         destination: 'lindi',
         departureDate,
@@ -88,9 +100,11 @@
         alert('SafariPlus not loaded yet.');
         return;
       }
+      configure();
       log('Opening empty newTripDialog…');
       await window.safariplus.newTripDialog({
-        operatorId: '2203260042',
+        apiKey: API_KEY,
+        operatorId: OPERATOR_ID,
         brand: 'Burdan Express',
       });
     });
